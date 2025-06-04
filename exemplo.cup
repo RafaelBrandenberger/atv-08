@@ -1,19 +1,27 @@
 import java_cup.runtime.*;
 
 terminal Integer INTEIRO;
-terminal MAIS, MENOS, PTVIRG;
+terminal MAIS, MENOS, MULT, DIV, RESTO, POT, PTVIRG;
 
-non terminal inicio;
 non terminal Integer expr;
+non terminal inicio;
 
-precedence left MAIS, MENOS;
+precedence left MAIS, MENOS; // define precedência para soma e subtração
+precedence left MULT, DIV, RESTO; // define precedência para multiplicação, divisão e resto
+precedence right POT; // define precedência e associatividade para potenciação
 
 start with inicio;
 
-inicio ::= expr:e PTVIRG {: System.out.println(e); :}
-         ;
+// imprime o resultado da expressão lida
 
-expr ::= expr:a MAIS expr:b  {: RESULT = a.intValue() + b.intValue(); :}
-       | expr:a MENOS expr:b {: RESULT = a.intValue() - b.intValue(); :}
-       | INTEIRO:a           {: RESULT = a.intValue(); :}
-       ;
+inicio ::= expr:e PTVIRG {: System.out.println("RESULTADO: " + e); :};
+
+expr ::=
+      expr:e1 POT expr:e2   {: RESULT = (int)Math.pow(e1, e2); :}      // calcula potenciação
+    | expr:e1 MULT expr:e2  {: RESULT = e1 * e2; :}                   // calcula multiplicação
+    | expr:e1 DIV expr:e2   {: RESULT = e1 / e2; :}                   // calcula divisão
+    | expr:e1 RESTO expr:e2 {: RESULT = e1 % e2; :}                   // calcula resto da divisão
+    | expr:e1 MAIS expr:e2  {: RESULT = e1 + e2; :}                   // calcula soma
+    | expr:e1 MENOS expr:e2 {: RESULT = e1 - e2; :}                   // calcula subtração
+    | INTEIRO:i             {: RESULT = (Integer) i; :}               // retorna valor inteiro lido
+    ;
